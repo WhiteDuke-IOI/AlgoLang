@@ -1,7 +1,7 @@
 #include "iostream";
 using namespace std;
 
-char a;
+unsigned char a;
 
 int main()
 {
@@ -9,6 +9,6 @@ int main()
 	cout << "Hello World!\n";
 	cout << "ֲגוהטעו סטלגמכ: ";
 	cin >> a;
-	cout << "ֲגוהוםûי סטלגמכ: ";
-	cout << a;
+	cout << "ֲגוהוםûי סטלגמכ: " << a << "\n";
+	system("PAUSE");
 }
