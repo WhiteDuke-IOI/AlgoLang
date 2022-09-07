@@ -1,6 +1,12 @@
 #include <iostream>;
 
+using namespace std;
+
 int main()
 {
-	std::cout << "Hello World!\n";
+	int x = 0;
+	cout << "Hello World!\n";
+	cout << "Input: ";
+	cin >> x;
+	cout << "Output: " << x << "\n";
 }
