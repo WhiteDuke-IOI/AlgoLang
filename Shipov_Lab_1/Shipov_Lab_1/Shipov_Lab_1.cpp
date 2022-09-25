@@ -2,6 +2,22 @@
 #include <string>
 using namespace std;
 
+struct pipe
+{
+    string name;
+    int lenght;
+    int diametr;
+    bool repair;
+};
+
+struct CS
+{
+    string name;
+    int countWS;
+    int actWS;
+    float eff;
+};
+
 void print_menu()
 {
     system("cls");
@@ -29,11 +45,13 @@ int get_variant(int count)
     return variant;
 }
 
-
 int main()
 {
     setlocale(LC_ALL, "Russian");
     int cursor;
+
+    pipe p;
+    CS CS;
 
     do
     {
