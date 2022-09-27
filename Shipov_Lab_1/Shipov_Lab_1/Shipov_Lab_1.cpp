@@ -45,6 +45,38 @@ int get_variant(int count)
     return variant;
 }
 
+pipe AddPipe()
+{
+    pipe Obj;
+    system("cls");
+    cout << "Добавление трубы\n";
+    cout << "Имя: ";
+    cin >> Obj.name;
+    cout << "Длинна (м): ";
+    cin >> Obj.lenght;
+    cout << "Диаметр (мм): ";
+    cin >> Obj.diametr;
+    cout << "Ремонт (0 или 1): ";
+    cin >> Obj.repair;
+    return Obj;
+}
+
+CS AddCS()
+{
+    CS Obj;
+    system("cls");
+    cout << "Добавление КС\n";
+    cout << "Имя: ";
+    cin >> Obj.name;
+    cout << "Кол-во цехов: ";
+    cin >> Obj.countWS;
+    cout << "Кол-во цехов в работе: ";
+    cin >> Obj.actWS;
+    cout << "Эффективность: ";
+    cin >> Obj.eff;
+    return Obj;
+}
+
 int main()
 {
     setlocale(LC_ALL, "Russian");
@@ -61,13 +93,15 @@ int main()
         switch (cursor) {
         case 1: 
         {
-            cout << "Действие: " << cursor << "\n";            
+            //cout << "Действие: " << cursor << "\n";  
+            p = AddPipe();
             break;
         }
 
         case 2: 
         {
-            cout << "Действие: " << cursor << "\n";            
+            //cout << "Действие: " << cursor << "\n"; 
+            CS = AddCS();
             break;
         }
 
