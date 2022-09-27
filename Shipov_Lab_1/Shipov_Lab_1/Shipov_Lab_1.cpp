@@ -77,6 +77,20 @@ CS AddCS()
     return Obj;
 }
 
+void ShowPipe(const pipe& Obj)
+{
+    cout << "Имя\t" << "Длинна\t" << "Диаметр\t" << "Ремонт\t" << endl;
+    cout << "================================================" << endl;
+    cout << Obj.name << '\t' << Obj.lenght << '\t' << Obj.diametr << '\t' << Obj.repair << endl;
+}
+
+void ShowCS(const CS& Obj)
+{
+    cout << "Имя\t" << "countWS\t" << "actWS\t" << "Эффективность\t" << endl;
+    cout << "===========================================================================" << endl;
+    cout << Obj.name << '\t' << Obj.countWS << '\t' << Obj.actWS << '\t' << Obj.eff << endl;
+}
+
 int main()
 {
     setlocale(LC_ALL, "Russian");
@@ -107,7 +121,12 @@ int main()
 
         case 3: 
         {
-            cout << "Действие: " << cursor << "\n";            
+            //cout << "Действие: " << cursor << "\n";   
+            system("cls");
+            cout << "Просмотр всех объектов\n\n";
+            ShowPipe(p);
+            cout << "\n";
+            ShowCS(CS);
             break;
         }
 
