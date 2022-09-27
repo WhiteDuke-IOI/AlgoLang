@@ -91,6 +91,68 @@ void ShowCS(const CS& Obj)
     cout << Obj.name << '\t' << Obj.countWS << '\t' << Obj.actWS << '\t' << Obj.eff << endl;
 }
 
+void EditPipe(pipe& Obj)
+{
+    system("cls");
+    cout << "Что редактируем?\n" << "1. Имя\n" << "2. Длинна\n" << "3. Диаметр\n" << "4. Ремонт\n" << "0. Выход\n" << ">";
+    int cursor = get_variant(4);
+    switch (cursor) {
+    case 1:
+        cout << "Текущее имя: " << Obj.name << "\n";
+        cout << "Новое имя: ";
+        cin >> Obj.name;
+        break;
+    case 2:
+        cout << "Текущая длинна: " << Obj.lenght << "\n";
+        cout << "Новая длинна (м): ";
+        cin >> Obj.lenght;
+        break;
+    case 3:
+        cout << "Текущий диаметр: " << Obj.diametr << "\n";
+        cout << "Новый диаметр (мм): ";
+        cin >> Obj.diametr;
+        break;
+    case 4:
+        cout << "Текущий Ремонт: " << Obj.repair << "\n";
+        cout << "Ремонт (0 или 1): ";
+        cin >> Obj.repair;
+        break;
+    case 0:
+        break;
+    }
+}
+
+void EditCS(CS& Obj)
+{
+    system("cls");
+    cout << "Что редактируем?\n" << "1. Имя\n" << "2. Кол-во цехов\n" << "3. Кол-во цехов в работе\n" << "4. Эффективность\n" << "0. Выход\n" << ">";
+    int cursor = get_variant(4);
+    switch (cursor) {
+    case 1:
+        cout << "Текущее имя: " << Obj.name << "\n";
+        cout << "Новое имя: ";
+        cin >> Obj.name;
+        break;
+    case 2:
+        cout << "Текущее кол-во цехов: " << Obj.countWS << "\n";
+        cout << "Новое кол-во цехов: ";
+        cin >> Obj.countWS;
+        break;
+    case 3:
+        cout << "Текущее кол-во цехов в работе: " << Obj.actWS << "\n";
+        cout << "Новое кол-во цехов в работе: ";
+        cin >> Obj.actWS;
+        break;
+    case 4:
+        cout << "Текущая эффективность: " << Obj.eff << "\n";
+        cout << "Новая эффективность: ";
+        cin >> Obj.eff;
+        break;
+    case 0:
+        break;
+    }
+}
+
 int main()
 {
     setlocale(LC_ALL, "Russian");
@@ -132,13 +194,15 @@ int main()
 
         case 4: 
         {
-            cout << "Действие: " << cursor << "\n";            
+            //cout << "Действие: " << cursor << "\n";            
+            EditPipe(p);
             break;
         }
 
         case 5: 
         {
-            cout << "Действие: " << cursor << "\n";            
+            //cout << "Действие: " << cursor << "\n";            
+            EditCS(CS);
             break;
         }
 
