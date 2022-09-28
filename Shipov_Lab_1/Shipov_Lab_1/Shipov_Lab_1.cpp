@@ -1,5 +1,7 @@
 ﻿#include <iostream>
 #include <string>
+#include <fstream>
+
 using namespace std;
 
 struct pipe
@@ -57,6 +59,8 @@ pipe AddPipe()
     cout << "Диаметр (мм): ";
     cin >> Obj.diametr;
     cout << "Ремонт (0 или 1): ";
+    //int rep = get_variant(1);
+    //Obj.repair = rep;
     cin >> Obj.repair;
     return Obj;
 }
@@ -115,6 +119,8 @@ void EditPipe(pipe& Obj)
     case 4:
         cout << "Текущий Ремонт: " << Obj.repair << "\n";
         cout << "Ремонт (0 или 1): ";
+        //int rep = get_variant(1);
+        //Obj.repair = rep;
         cin >> Obj.repair;
         break;
     case 0:
@@ -153,13 +159,43 @@ void EditCS(CS& Obj)
     }
 }
 
+void Save(const pipe& Obj1, const CS& Obj2)
+{
+    ofstream fout ("C:\\Users\\iship\\OneDrive\\Документы\\GitHub\\CrossPlatform\\Shipov_Lab_1\\mas.txt");
+    fout << Obj1.name << " " << Obj1.lenght << " " << Obj1.diametr << " " << Obj1.repair << endl;
+    fout << Obj2.name << " " << Obj2.countWS << " " << Obj2.actWS << " " << Obj2.eff << endl;
+    fout.close();
+}
+
+void Upload(pipe& Obj1, CS& Obj2)
+{
+    ifstream fin("C:\\Users\\iship\\OneDrive\\Документы\\GitHub\\CrossPlatform\\Shipov_Lab_1\\mas.txt");
+    string buff;
+    if (!fin.is_open()) // если файл не открыт
+        cout << "Файл не может быть открыт!\n"; // сообщить об этом
+    else
+    {
+        fin >> Obj1.name;
+        fin >> Obj1.lenght;
+        fin >> Obj1.diametr;
+        fin >> Obj1.repair;
+
+        fin >> Obj2.name;
+        fin >> Obj2.countWS;
+        fin >> Obj2.actWS;
+        fin >> Obj2.eff;
+
+        fin.close(); // закрываем файл        
+    }
+}
+
 int main()
 {
     setlocale(LC_ALL, "Russian");
     int cursor;
 
-    pipe p;
-    CS CS;
+    pipe p = {"0", 0, 0, 0};
+    CS CS = { "0", 0, 0, 0 };
 
     do
     {
@@ -208,13 +244,15 @@ int main()
 
         case 6: 
         {
-            cout << "Действие: " << cursor << "\n";
+            //cout << "Действие: " << cursor << "\n";
+            Save(p, CS);
             break;
         }
 
         case 7: 
         {
-            cout << "Действие: " << cursor << "\n";
+            //cout << "Действие: " << cursor << "\n";
+            Upload(p, CS);
             break;
         }
         }
