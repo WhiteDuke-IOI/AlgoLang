@@ -34,17 +34,30 @@ void print_menu()
     cout << "\nВыберите действие - ";
 }
 
-int get_variant(int count)
+int Get_Int(int b)
 {
-    int variant;
-    string s;
-    getline(cin, s);
-    while (sscanf(s.c_str(), "%d", &variant) != 1 || variant < 0 || variant > count) 
-    {
-        cout << "Некорректный ввод. Попробуйте снова: ";
-        getline(cin, s);
+    int n;
+    cin >> n;
+    while ((cin.fail()) || (n < 0) || (n > b) || (cin.get() != '\n')) {
+        cin.clear();
+        cin.ignore(1000000, '\n');
+        cout << "Введите корректное число: ";
+        cin >> n;
     }
-    return variant;
+    return n;
+}
+
+float Get_Float(float b)
+{
+    float n;
+    cin >> n;
+    while ((cin.fail()) || (n < 0) || (n > b) || (cin.get() != '\n')) {
+        cin.clear();
+        cin.ignore(1000000, '\n');
+        cout << "Введите корректное число: ";
+        cin >> n;
+    }
+    return n;
 }
 
 pipe AddPipe()
@@ -53,15 +66,25 @@ pipe AddPipe()
     system("cls");
     cout << "Добавление трубы\n";
     cout << "Имя: ";
-    cin >> Obj.name;
-    cout << "Длинна (м): ";
-    cin >> Obj.lenght;
-    cout << "Диаметр (мм): ";
-    cin >> Obj.diametr;
-    cout << "Ремонт (0 или 1): ";
-    //int rep = get_variant(1);
-    //Obj.repair = rep;
-    cin >> Obj.repair;
+    //cin >> Obj.name;
+    getline(cin, Obj.name);
+    cout << "Длинна (км): ";
+    //cin >> Obj.lenght;
+    Obj.lenght = Get_Int(1000000);
+    while (Obj.lenght <= 0) {
+        cout << "Длинна должна быть больше 0!" << endl;
+        Obj.lenght = Get_Int(1000000);
+    }
+    cout << "Диаметр (см): ";
+    //cin >> Obj.diametr;
+    Obj.diametr = Get_Int(1000000);
+    while (Obj.diametr <= 0) {
+        cout << "Диаметр должен быть больше 0!" << endl;
+        Obj.diametr = Get_Int(1000000);
+    }
+    cout << "Ремонт (0 - Нет или 1 - Да): ";
+    //cin >> Obj.repair;
+    Obj.repair = Get_Int(1);
     return Obj;
 }
 
@@ -71,13 +94,25 @@ CS AddCS()
     system("cls");
     cout << "Добавление КС\n";
     cout << "Имя: ";
-    cin >> Obj.name;
+    //cin >> Obj.name;
+    getline(cin, Obj.name);
     cout << "Кол-во цехов: ";
-    cin >> Obj.countWS;
+    //cin >> Obj.countWS;
+    Obj.countWS = Get_Int(1000000);
+    while (Obj.countWS <= 0) {
+        cout << "Кол-во цехов должно быть больше 0!" << endl;
+        Obj.countWS = Get_Int(1000000);
+    }
     cout << "Кол-во цехов в работе: ";
-    cin >> Obj.actWS;
-    cout << "Эффективность: ";
-    cin >> Obj.eff;
+    //cin >> Obj.actWS;
+    Obj.actWS = Get_Int(1000000);
+    while (Obj.countWS < Obj.actWS) {
+        cout << "Количество цехов в работе должно быть меньше либо равно общему количеству цехов!" << endl;
+        Obj.actWS = Get_Int(1000000);
+    }
+    cout << "Эффективность (От 0 до 1): ";
+    //cin >> Obj.eff;
+    Obj.eff = Get_Float(1);
     return Obj;
 }
 
@@ -99,29 +134,39 @@ void EditPipe(pipe& Obj)
 {
     system("cls");
     cout << "Что редактируем?\n" << "1. Имя\n" << "2. Длинна\n" << "3. Диаметр\n" << "4. Ремонт\n" << "0. Выход\n" << ">";
-    int cursor = get_variant(4);
+    int cursor = Get_Int(4);
     switch (cursor) {
     case 1:
         cout << "Текущее имя: " << Obj.name << "\n";
         cout << "Новое имя: ";
-        cin >> Obj.name;
+        //cin >> Obj.name;
+        getline(cin, Obj.name);
         break;
     case 2:
         cout << "Текущая длинна: " << Obj.lenght << "\n";
-        cout << "Новая длинна (м): ";
-        cin >> Obj.lenght;
+        cout << "Новая длинна (км): ";
+        //cin >> Obj.lenght;
+        Obj.lenght = Get_Int(1000000);
+        while (Obj.lenght <= 0) {
+            cout << "Длинна должна быть больше 0!" << endl;
+            Obj.lenght = Get_Int(1000000);
+        }
         break;
     case 3:
         cout << "Текущий диаметр: " << Obj.diametr << "\n";
-        cout << "Новый диаметр (мм): ";
-        cin >> Obj.diametr;
+        cout << "Новый диаметр (см): ";
+        //cin >> Obj.diametr;
+        Obj.diametr = Get_Int(1000000);
+        while (Obj.diametr <= 0) {
+            cout << "Диаметр должен быть больше 0!" << endl;
+            Obj.diametr = Get_Int(1000000);
+        }
         break;
     case 4:
         cout << "Текущий Ремонт: " << Obj.repair << "\n";
-        cout << "Ремонт (0 или 1): ";
-        //int rep = get_variant(1);
-        //Obj.repair = rep;
-        cin >> Obj.repair;
+        cout << "Ремонт (0 - Нет или 1 - Да): ";
+        //cin >> Obj.repair;
+        Obj.repair = Get_Int(1);
         break;
     case 0:
         break;
@@ -132,27 +177,39 @@ void EditCS(CS& Obj)
 {
     system("cls");
     cout << "Что редактируем?\n" << "1. Имя\n" << "2. Кол-во цехов\n" << "3. Кол-во цехов в работе\n" << "4. Эффективность\n" << "0. Выход\n" << ">";
-    int cursor = get_variant(4);
+    int cursor = Get_Int(4);
     switch (cursor) {
     case 1:
         cout << "Текущее имя: " << Obj.name << "\n";
         cout << "Новое имя: ";
-        cin >> Obj.name;
+        //cin >> Obj.name;
+        getline(cin, Obj.name);
         break;
     case 2:
         cout << "Текущее кол-во цехов: " << Obj.countWS << "\n";
         cout << "Новое кол-во цехов: ";
-        cin >> Obj.countWS;
+        //cin >> Obj.countWS;
+        Obj.countWS = Get_Int(1000000);
+        while (Obj.countWS <= 0) {
+            cout << "Кол-во цехов должно быть больше 0!" << endl;
+            Obj.countWS = Get_Int(1000000);
+        }
         break;
     case 3:
         cout << "Текущее кол-во цехов в работе: " << Obj.actWS << "\n";
         cout << "Новое кол-во цехов в работе: ";
-        cin >> Obj.actWS;
+        //cin >> Obj.actWS;
+        Obj.actWS = Get_Int(1000000);
+        while (Obj.countWS < Obj.actWS) {
+            cout << "Количество цехов в работе должно быть меньше либо равно общему количеству цехов!" << endl;
+            Obj.actWS = Get_Int(1000000);
+        }
         break;
     case 4:
         cout << "Текущая эффективность: " << Obj.eff << "\n";
-        cout << "Новая эффективность: ";
-        cin >> Obj.eff;
+        cout << "Новая эффективность (От 0 до 1): ";
+        //cin >> Obj.eff;
+        Obj.eff = Get_Float(1);
         break;
     case 0:
         break;
@@ -162,8 +219,8 @@ void EditCS(CS& Obj)
 void Save(const pipe& Obj1, const CS& Obj2)
 {
     ofstream fout ("C:\\Users\\iship\\OneDrive\\Документы\\GitHub\\CrossPlatform\\Shipov_Lab_1\\mas.txt");
-    fout << Obj1.name << " " << Obj1.lenght << " " << Obj1.diametr << " " << Obj1.repair << endl;
-    fout << Obj2.name << " " << Obj2.countWS << " " << Obj2.actWS << " " << Obj2.eff << endl;
+    fout << Obj1.name << "/" << Obj1.lenght << "/" << Obj1.diametr << "/" << Obj1.repair << endl;
+    fout << Obj2.name << "/" << Obj2.countWS << "/" << Obj2.actWS << "/" << Obj2.eff << endl;
     fout.close();
 }
 
@@ -175,23 +232,66 @@ void Upload(pipe& Obj1, CS& Obj2)
         cout << "Файл не может быть открыт!\n"; // сообщить об этом
     else
     {
-        fin >> Obj1.name;
-        fin >> Obj1.lenght;
-        fin >> Obj1.diametr;
-        fin >> Obj1.repair;
+        getline(fin, Obj1.name, '/');
+        getline(fin, buff, '/');
+        if (stoi(buff) <= 0) {
+            cout << "Файл не корректен 1!" << endl;
+            return;
+        }
+        else {
+            Obj1.lenght = stoi(buff);
+        }
+        getline(fin, buff, '/');        
+        if (stoi(buff) <= 0) {
+            cout << "Файл не корректен 2!" << endl;
+            return;
+        }
+        else {
+            Obj1.diametr = stoi(buff);
+        }
+        getline(fin, buff);        
+        if ((stoi(buff) < 0) || (stoi(buff) > 1)) {
+            cout << "Файл не корректен 3!" << endl;
+            return;
+        }
+        else {
+            Obj1.repair = stoi(buff);
+        }
 
-        fin >> Obj2.name;
-        fin >> Obj2.countWS;
-        fin >> Obj2.actWS;
-        fin >> Obj2.eff;
-
-        fin.close(); // закрываем файл        
+        getline(fin, Obj2.name, '/');
+        getline(fin, buff, '/');        
+        if (stoi(buff) <= 0) {
+            cout << "Файл не корректен 4!" << endl;
+            return;
+        }
+        else {
+            Obj2.countWS = stoi(buff);
+        }
+        getline(fin, buff, '/');        
+        if (Obj2.countWS < stoi(buff)) {
+            cout << "Файл не корректен 5!" << endl;
+            return;
+        }
+        else {
+            Obj2.actWS = stoi(buff);
+        }
+        getline(fin, buff);
+        if ((stof(buff) < 0) || (stof(buff) > 1)) {
+            cout << "Файл не корректен 6!" << endl;
+            return;
+        }
+        else {
+            Obj2.eff = stof(buff);
+        }
+        
+        fin.close(); // закрываем файл  
+        return;
     }
 }
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
+    setlocale(LC_CTYPE, "Russian");
     int cursor;
 
     pipe p = {"0", 0, 0, 0};
@@ -200,7 +300,7 @@ int main()
     do
     {
         print_menu();
-        cursor = get_variant(7);
+        cursor = Get_Int(7);
 
         switch (cursor) {
         case 1: 
