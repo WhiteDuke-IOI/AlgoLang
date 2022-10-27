@@ -23,15 +23,15 @@ struct CS
 void print_menu()
 {
     system("cls");
-    std::cout << "1. Добавить трубу\n";
-    std::cout << "2. Добавить КС\n";
-    std::cout << "3. Просмотр всех объектов\n";
-    std::cout << "4. Редактировать трубу\n";
-    std::cout << "5. Редактировать КС\n";
-    std::cout << "6. Сохранить\n";
-    std::cout << "7. Загрузить\n";
-    std::cout << "0. Выход\n";
-    std::cout << "\nВыберите действие - ";
+    std::cout << "1. Add pipeline\n";
+    std::cout << "2. Add compressor stations\n";
+    std::cout << "3. Show all objects\n";
+    std::cout << "4. Edit pipeline\n";
+    std::cout << "5. Edit compressor stations\n";
+    std::cout << "6. Save\n";
+    std::cout << "7. Load\n";
+    std::cout << "0. Exit\n";
+    std::cout << "\nChoose action - ";
 }
 
 int Get_Int(int a, int b) {
@@ -40,7 +40,7 @@ int Get_Int(int a, int b) {
     while ((cin.fail()) || (n < a) || (n > b) || (cin.get() != '\n')) {
         std::cin.clear();
         std::cin.ignore(1000000, '\n');
-        std::cout << "Введите корректное число: ";
+        std::cout << "Enter correct number: ";
         std::cin >> n;
     }
     return n;
@@ -52,7 +52,7 @@ float Get_Float(float a, float b) {
     while ((std::cin.fail()) || (n < a) || (n > b) || (std::cin.get() != '\n')) {
         std::cin.clear();
         std::cin.ignore(1000000, '\n');
-        std::cout << "Введите корректное число: ";
+        std::cout << "Enter correct number: ";
         std::cin >> n;
     }
     return n;
