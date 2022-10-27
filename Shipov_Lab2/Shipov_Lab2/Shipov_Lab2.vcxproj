@@ -24,7 +24,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CS.cpp" />
+    <ClCompile Include="Function.cpp" />
     <ClCompile Include="pipe.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

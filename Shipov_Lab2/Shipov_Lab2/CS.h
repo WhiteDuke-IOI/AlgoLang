@@ -15,10 +15,10 @@ public:
 	int get_act_ws() const;
 	double get_eff() const;
 
-	void add_CS();
 	void set_act_ws();
 
 	friend ostream& operator<<(ostream& os, const CS& stat);
+	friend istream& operator>>(istream& is, CS& stat);
 	friend ofstream& operator<<(ofstream& ofs, const CS& stat);
 	friend ifstream& operator>>(ifstream& ifs, CS& stat);
 };

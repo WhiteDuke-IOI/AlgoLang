@@ -15,11 +15,12 @@ public:
     double get_diameter() const;
     bool get_repair() const;
 
-    void add_pipe();
     void set_repair();
 
     friend ostream& operator<<(ostream& os, const pipe& p);
+    friend istream& operator>>(istream& is, pipe& p);
     friend ofstream& operator<<(ofstream& ofs, const pipe& p);
     friend ifstream& operator>>(ifstream& ifs, pipe& p);
+    
 };
 
