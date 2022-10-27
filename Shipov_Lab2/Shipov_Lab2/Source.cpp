@@ -17,7 +17,8 @@ void add_CS_object(unordered_map <int, CS>& mp);
 
 void show_all_object(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
 
-
+void save(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
+void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs);
 
 int main() {
     unordered_map <int, pipe> mp_pipe;
@@ -63,12 +64,12 @@ int main() {
         }
 
         case 8: {
-            //
+            save(mp_pipe, mp_cs);
             break;
         }
 
         case 9: {
-            //
+            upload(mp_pipe, mp_cs);
             break;
         }
 
