@@ -57,14 +57,48 @@ void add_pipe_object(unordered_map <int, pipe>& mp) {
     cin >> mp[mp.size() != 0 ? iter--, iter->first + 1 : 1];
 }
 
+using pipe_func = void(*)(unordered_map <int, pipe>& p, int id);
+void edit_pipe(unordered_map <int, pipe>& mp, int id) {
+    mp[id].set_repair();
+}
 
+void delete_pipe(unordered_map <int, pipe>& mp, int id) {
+    mp.erase(id);
+}
+
+void action_over_pipe(unordered_map <int, pipe>& mp, pipe_func func) {
+    cout << "Enter the ID of pipeline" << endl;
+    auto iter = mp.find(Get_Int(1, 1000000));
+    if (iter == mp.end()) cout << "\nWe cannot find this id. Try again \n" << endl;
+    else {
+        int i = iter->first;
+        func(mp, i);
+    }
+}
 
 void add_CS_object(unordered_map <int, CS>& mp) {
     auto iter = mp.end();
     cin >> mp[mp.size() != 0 ? iter--, iter->first + 1 : 1];
 }
 
+using CS_func = void(*)(unordered_map <int, CS>& p, int id);
+void edit_cs(unordered_map <int, CS>& mp, int id) {
+    mp[id].set_act_ws();
+}
 
+void delete_cs(unordered_map <int, CS>& mp, int id) {
+    mp.erase(id);
+}
+
+void action_over_cs(unordered_map <int, CS>& mp, CS_func func) {
+    cout << "Enter the ID of compressor station" << endl;
+    auto iter = mp.find(Get_Int(1, 1000000));
+    if (iter == mp.end()) cout << "\nWe cannot find this id. Try again \n" << endl;
+    else {
+        int i = iter->first;
+        func(mp, i);
+    }
+}
 
 void show_all_object(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
