@@ -18,6 +18,10 @@ void print_menu()
         << "7. Show all objects\n"
         << "8. Save\n"
         << "9. Upload\n"
+        << "10. Filtration pipe by name\n"
+        << "11. Filtration pipe by repair\n"
+        << "12. Filtration CS by name\n"
+        << "13. Filtration CS by active workshop\n"
         << "0. Exit\n"
         << "\nChoose action - ";
 }
@@ -48,15 +52,19 @@ float Get_Float(const float a, const float b) {
 
 bool file_exist(const string& name_file)
 {
-    ifstream exist(name_file); // Проверка существования файла
+    ifstream exist("..\\" + name_file); // Проверка существования файла
     return(exist.is_open());
 }
 
+
+//Добавление трубы
 void add_pipe_object(unordered_map <int, pipe>& mp) {
     auto iter = mp.end();
     cin >> mp[mp.size() != 0 ? iter--, iter->first + 1 : 1];
 }
 
+
+//Действие над трубой
 using pipe_func = void(*)(unordered_map <int, pipe>& p, int id);
 void edit_pipe(unordered_map <int, pipe>& mp, int id) {
     mp[id].set_repair();
@@ -76,11 +84,15 @@ void action_over_pipe(unordered_map <int, pipe>& mp, pipe_func func) {
     }
 }
 
+
+//Добавление КС
 void add_CS_object(unordered_map <int, CS>& mp) {
     auto iter = mp.end();
     cin >> mp[mp.size() != 0 ? iter--, iter->first + 1 : 1];
 }
 
+
+//Действие над КС
 using CS_func = void(*)(unordered_map <int, CS>& p, int id);
 void edit_cs(unordered_map <int, CS>& mp, int id) {
     mp[id].set_act_ws();
@@ -100,6 +112,8 @@ void action_over_cs(unordered_map <int, CS>& mp, CS_func func) {
     }
 }
 
+
+//Показ всех объектов
 void show_all_object(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
     cout << left << "All objects\n";
@@ -117,29 +131,33 @@ void show_all_object(const unordered_map <int, pipe>& mp_pipe, const unordered_m
     system("pause");
 }
 
+
+//Сохранение в файл
 void save(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
     cout << "Enter the name of file, using for saving data: ";
     string name_file;
     getline(cin, name_file);
-    ofstream fout("..\\" + name_file, file_exist(name_file) ? cout << "The file with this name is exist. Rewrite file ? (1 Yes) / (0 No): ", Get_Int(0, 1) : 0 ? ios::out : ios::app);
-
-    if (fout.is_open())
-    {
+    ofstream fout("..\\" + name_file, file_exist(name_file) ? cout << "The file with this name is exist. Rewrite file ? (1 Yes) / (0 No): ", ((bool)Get_Int(0, 1) ? ios::out : ios::app) : ios::out);
+    
+    if (fout.is_open()) {
         if (mp_pipe.size()) for (auto iter : mp_pipe) fout << iter.second;
         if (mp_cs.size()) for (auto iter : mp_cs) fout << iter.second;
         fout.close();
     }
     cout << "\nData "; (mp_pipe.size()) || (mp_cs.size()) ? cout << "have" : cout << "haven't"; cout << " been saved";
+    system("pause");
 }
 
+
+//Загрузка из файла
 void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs) {
     system("cls");
     string name_file;
     while (1) {
         cout << "Enter the name of file, using for loading data: ";
         getline(cin, name_file);
-        if (file_exist("..\\" + name_file)) { cout << "This file has been find "; break; }
+        if (file_exist(name_file)) { cout << "This file has been find "; break; }
         else { cout << "We cannot find this file. Try again ? Yes 1/ No 0: "; if (Get_Int(0, 1) == false) break; }
     }
 
@@ -156,4 +174,110 @@ void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs) 
         fin.close();
         cout << "\nData "; (mp_pipe.size()) || (mp_cs.size()) ? cout << "have" : cout << "haven't"; cout << " been upload";
     }
+}
+
+
+template<typename T> //Фильтрация труб
+using filter_pipe = bool(*)(const pair <int, pipe>& p, T param);
+bool check_pipe_by_repair(const pair <int, pipe>& p, bool param) {
+    return p.second.get_repair() == param;
+}
+
+bool check_pipe_by_name(const pair <int, pipe>& p, string param) {
+    size_t search = p.second.get_name().find(param);
+    return search != std::string::npos;
+}
+
+template<typename T>
+vector<int> find_pipe_by_filter(const unordered_map <int, pipe>& mp, filter_pipe<T> f, T param) {
+    vector<int> res;
+    for (auto iter : mp) if (f(iter, param)) res.push_back(iter.first);
+    return res;
+}
+
+void filtration_pipe_by_repair(unordered_map <int, pipe>& mp) {
+    system("cls");
+    cout << "Find pipeline by repair" << endl;
+    if (mp.size()) {
+        cout << "Enter status of repair: ";
+        vector<int> found_vector = find_pipe_by_filter<bool>(mp, check_pipe_by_repair, Get_Int(0, 1));
+        cout << endl << left << "Find pipelines\n";
+        cout << "|" << setw(4) << "ID" << "|" << setw(16) << "Name" << "|" << setw(16) << "Length" << "|" << setw(16) << "Diameter" << "|" << setw(6) << "Repair" << "|" << endl
+            << "================================================================" << endl;
+        if (found_vector.size()) { for (int i : found_vector) { cout << "|" << setw(4) << i << "|" << mp[i]; } }
+        else { cout << "Sorry, we didn't found any pipeline" << endl; }
+    }
+    else { cout << "Sorry, we haven't any pipeline" << endl; }
+    system("pause");
+}
+
+void filtration_pipe_by_name(unordered_map <int, pipe>& mp) {
+    system("cls");
+    cout << "Find pipeline by name" << endl;
+    if (mp.size()) {
+        cout << "Enter name or part of name: ";
+        string param;
+        getline(cin, param);
+        vector<int> found_vector = find_pipe_by_filter(mp, check_pipe_by_name, param);
+        cout << endl << left << "Find pipelines\n";
+        cout << "|" << setw(4) << "ID" << "|" << setw(16) << "Name" << "|" << setw(16) << "Length" << "|" << setw(16) << "Diameter" << "|" << setw(6) << "Repair" << "|" << endl
+            << "================================================================" << endl;
+        if (found_vector.size()) { for (int i : found_vector) { cout << "|" << setw(4) << i << "|" << mp[i]; } }
+        else { cout << "Sorry, we didn't found any pipeline" << endl; }
+    }
+    else { cout << "Sorry, we haven't any pipeline" << endl; }
+    system("pause");
+}
+
+
+template<typename T> //Фильтрация КС
+using filter_cs = bool(*)(const pair <int, CS>& p, T param);
+bool check_cs_by_act_ws(const pair <int, CS>& p, int param) {
+    return (p.second.get_act_ws() * 100 / p.second.get_count_ws()) >= param;
+}
+
+bool check_cs_by_name(const pair <int, CS>& p, string param) {
+    size_t search = p.second.get_name().find(param);
+    return search != std::string::npos;
+}
+
+template<typename T>
+vector<int> find_cs_by_filter(const unordered_map <int, CS>& mp, filter_cs<T> f, T param) {
+    vector<int> res;
+    for (auto iter : mp) if (f(iter, param)) res.push_back(iter.first);
+    return res;
+}
+
+void filtration_cs_by_act_ws(const unordered_map <int, CS>& mp) {
+    system("cls");
+    cout << "Find CS by active workshop" << endl;
+    if (mp.size()) {
+        cout << "Enter percent of working workshops: ";
+        vector<int> found_vector = find_cs_by_filter(mp, check_cs_by_act_ws, Get_Int(0, 100));
+        cout << endl << left << "Find CSs\n";
+        cout << "|" << setw(4) << "ID" << "|" << setw(16) << "Name" << "|" << setw(16) << "Count WS" << "|" << setw(16) << "Act WS" << "|" << setw(10) << "Efficiency" << "|" << endl
+            << "====================================================================" << endl;
+        if (found_vector.size()) { for (int i : found_vector) { cout << "|" << setw(4) << i << "|" << mp.at(i); } }
+        else { cout << "Sorry, we didn't found any CS" << endl; }
+    }
+    else { cout << "Sorry, we haven't any CS" << endl; }
+    system("pause");
+}
+
+void filtration_cs_by_name(const unordered_map <int, CS>& mp) {
+    system("cls");
+    cout << "Find CS by name" << endl;
+    if (mp.size()) {
+        cout << "Enter name or part of name: ";
+        string param;
+        getline(cin, param);
+        vector<int> found_vector = find_cs_by_filter(mp, check_cs_by_name, param);
+        cout << endl << left << "Find CSs\n";
+        cout << "|" << setw(4) << "ID" << "|" << setw(16) << "Name" << "|" << setw(16) << "Count WS" << "|" << setw(16) << "Act WS" << "|" << setw(10) << "Efficiency" << "|" << endl
+             << "====================================================================" << endl;
+        if (found_vector.size() != 0) { for (int i : found_vector) { cout << "|" << setw(4) << i << "|" << mp.at(i); } }
+        else { cout << "Sorry, we didn't found any CS" << endl; }
+    }
+    else { cout << "Sorry, we haven't any CS" << endl; }
+    system("pause");
 }
