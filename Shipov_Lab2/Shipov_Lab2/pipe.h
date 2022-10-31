@@ -16,6 +16,7 @@ public:
     bool get_repair() const;
 
     void set_repair();
+    void set_repair(bool new_status);
 
     friend ostream& operator<<(ostream& os, const pipe& p);
     friend istream& operator>>(istream& is, pipe& p);

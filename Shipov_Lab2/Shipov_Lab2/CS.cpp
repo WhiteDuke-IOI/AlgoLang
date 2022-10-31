@@ -49,10 +49,7 @@ ifstream& operator>>(ifstream& ifs, CS& stat) {
     return ifs;
 };
 
-void CS::set_act_ws() // Редактирование КС
-{
-    system("cls");
-    cout << "Edit CS\n";
+void CS::set_act_ws() { // Редактирование КС      
     cout << "Old number active workshops: " << act_ws << endl;
     cout << "Enter new number of active worckshop: ";
     act_ws = Get_Int(0, count_ws);

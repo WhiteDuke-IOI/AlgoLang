@@ -50,9 +50,12 @@ ifstream& operator>>(ifstream& ifs, pipe& p) {
 };
 
 void pipe::set_repair() { // Редактирование трубы
-    system("cls");
-    cout << "Edit pipe\n";
     cout << "Old repair status: " << repair << endl;;
-    cout << " Enter the new repair status: ";
+    cout << "Enter the new repair status: ";
     repair = Get_Int(0, 1);
+}
+
+void pipe::set_repair(bool new_status)
+{
+    repair = new_status;
 }
