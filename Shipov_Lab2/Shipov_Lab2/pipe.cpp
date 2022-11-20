@@ -1,24 +1,24 @@
 #include "pipe.h"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <string>
-
-using namespace std;
 
 const int PIPE_FLAG = 1;
 
-int Get_Int(const int a, const int b);
-float Get_Float(const float a, const float b);
+template<typename T>
+T Get_Num(T a, T b) {
+    T n;
+    while (!(cin >> n) || (n < a) || (n > b) || (cin.get() != '\n')) {
+        cin.clear();
+        cin.ignore(1000000, '\n');
+        cout << "Enter correct number: ";
+    }
+    return n;
+}
 
 string pipe::get_name() const { return(name); }
-int pipe::get_lenght() const { return(lenght); }
-double pipe::get_diameter() const { return(diameter); }
 bool pipe::get_repair() const { return(repair); }
 
 ostream& operator<<(ostream& os, const pipe& p) {
-    return os << setw(16) << p.get_name() << "|" << setw(16) << p.get_lenght() << "|" << setw(16) << p.get_diameter() 
-        << "|" << setw(6) << p.get_repair() << "|" << endl;
+    return os << "|" << setw(4) << p.id << "|" << setw(16) << p.name << "|" << setw(16) << p.lenght << "|" << setw(16) << p.diameter
+        << "|" << setw(6) << p.repair << "|" << endl;
 }
 
 istream& operator>>(istream& is, pipe& p) {
@@ -27,16 +27,16 @@ istream& operator>>(istream& is, pipe& p) {
     cout << "Enter the pipeline's name: ";
     getline(cin, p.name);
     cout << "Enter pipeline's length (km): ";
-    p.lenght = Get_Int(1, 1000000);
+    p.lenght = Get_Num(1, 1000000);
     cout << "Enter pipeline's diameter (cm): ";
-    p.diameter = Get_Int(1, 1000000);
+    p.diameter = Get_Num(1, 1000000);
     cout << "Enter pipeline's status (0 - on, 1 - off): ";
-    p.repair = Get_Int(0, 1);
+    p.repair = Get_Num(0, 1);
     return is;
 };
 
 ofstream& operator<<(ofstream& ofs, const pipe& p) {
-    ofs << PIPE_FLAG << endl << p.get_name() << endl << p.get_lenght() << endl << p.get_diameter() << endl << p.get_repair()
+    ofs << PIPE_FLAG << endl << p.id << endl << p.name << endl << p.lenght << endl << p.diameter << endl << p.repair
         << endl << endl;
     return ofs;
 };
@@ -52,10 +52,14 @@ ifstream& operator>>(ifstream& ifs, pipe& p) {
 void pipe::set_repair() { // Редактирование трубы
     cout << "Old repair status: " << repair << endl;;
     cout << "Enter the new repair status: ";
-    repair = Get_Int(0, 1);
+    repair = Get_Num(0, 1);
 }
 
 void pipe::set_repair(bool new_status)
 {
     repair = new_status;
+}
+
+void pipe::set_pipe_id(int pipe_id) {
+    id = pipe_id;
 }

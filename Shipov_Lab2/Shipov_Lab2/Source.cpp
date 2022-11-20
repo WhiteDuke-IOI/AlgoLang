@@ -1,17 +1,32 @@
-#include "Header.h"
+#include "Source.h"
 
 using namespace std;
+
+template<typename T>
+T Get_Num(T a, T b) {
+    T n;
+    while (!(cin >> n) || (n < a) || (n > b) || (cin.get() != '\n')) {
+        cin.clear();
+        cin.ignore(1000000, '\n');
+        cout << "Enter correct number: ";
+    }
+    return n;
+}
 
 int main() {
     unordered_map <int, pipe> mp_pipe;
     unordered_map <int, CS> mp_cs;
+
+    int max_pipe_id = 0;
+    int max_cs_id = 0;
+
     do {
         print_menu();
-        int cursor = Get_Int(0, 13);
+        int cursor = Get_Num(0, 13);
 
         switch (cursor) {
         case 1: { //Добавление трубы
-            add_pipe_object(mp_pipe);
+            add_pipe_object(mp_pipe, max_pipe_id);
             break;
         }
 
@@ -26,7 +41,7 @@ int main() {
         }
         
         case 4: { //Добавление КС
-            add_CS_object(mp_cs);
+            add_CS_object(mp_cs, max_cs_id);
             break;
         }
 
@@ -41,7 +56,12 @@ int main() {
         }
 
         case 7: { //Просмотр всех объектов
-            show_all_object(mp_pipe, mp_cs);
+            system("cls");
+            cout << left << "All objects\n";
+            show_pipe(mp_pipe);
+            cout << endl;
+            show_cs(mp_cs);
+            system("pause");
             break;
         }
 
@@ -51,7 +71,7 @@ int main() {
         }
 
         case 9: { //Загрузка из файла
-            upload(mp_pipe, mp_cs);
+            upload(mp_pipe, mp_cs, max_pipe_id, max_cs_id);
             break;
         }
 

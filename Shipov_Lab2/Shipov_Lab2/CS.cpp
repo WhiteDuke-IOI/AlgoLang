@@ -1,15 +1,18 @@
 #include "CS.h"
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <string>
-
-using namespace std;
 
 const int CS_FLAG = 2;
 
-int Get_Int(const int a, const int b);
-float Get_Float(const float a, const float b);
+template<typename T>
+T Get_Num(T a, T b) {
+    T n;
+    while (!(cin >> n) || (n < a) || (n > b) || (cin.get() != '\n')) {
+        cin.clear();
+        cin.ignore(1000000, '\n');
+        cout << "Enter correct number: ";
+
+    }
+    return n;
+}
 
 string CS::get_name() const { return(name); }
 int CS::get_count_ws() const { return(count_ws); }
@@ -17,8 +20,8 @@ int CS::get_act_ws() const { return(act_ws); }
 double CS::get_eff() const { return(eff); }
 
 ostream& operator<<(ostream& os, const CS& stat) {
-    return os << setw(16) << stat.get_name() << "|" << setw(16) << stat.get_count_ws() << "|" << setw(16) << stat.get_act_ws() 
-        << "|" << setw(10) << stat.get_eff() << "|" << endl;
+    return os << "|" << setw(4) << stat.id << "|" << setw(16) << stat.name << "|" << setw(16) << stat.count_ws << "|" << setw(16) << stat.act_ws
+        << "|" << setw(10) << stat.eff << "|" << endl;
 } 
 
 istream& operator>>(istream& is, CS& stat) {
@@ -27,17 +30,17 @@ istream& operator>>(istream& is, CS& stat) {
     cout << "Enter the CS's name: ";
     getline(cin, stat.name);
     cout << "Enter number of all worckshop: ";
-    stat.count_ws = Get_Int(1, 1000000);
+    stat.count_ws = Get_Num(1, 1000000);
     cout << "Enter number of active worckshop: ";
-    stat.act_ws = Get_Int(0, stat.count_ws);
+    stat.act_ws = Get_Num(0, stat.count_ws);
     cout << "Enter the CS's efficiency: ";
-    stat.eff = Get_Float(0, 1);
+    stat.eff = Get_Num(0.0, 1.0);
     return is;
 };
 
 ofstream& operator<<(ofstream& ofs, const CS& stat) {
-    ofs << CS_FLAG << endl << stat.get_name() << endl << stat.get_act_ws() << endl << stat.get_count_ws()
-        << endl << stat.get_eff() << endl << endl;
+    ofs << CS_FLAG << endl << stat.id << endl << stat.name << endl << stat.act_ws << endl << stat.count_ws
+        << endl << stat.eff << endl << endl;
     return ofs;
 };
 
@@ -52,5 +55,9 @@ ifstream& operator>>(ifstream& ifs, CS& stat) {
 void CS::set_act_ws() { // Редактирование КС      
     cout << "Old number active workshops: " << act_ws << endl;
     cout << "Enter new number of active worckshop: ";
-    act_ws = Get_Int(0, count_ws);
+    act_ws = Get_Num(0, count_ws);
+}
+
+void CS::set_cs_id(int cs_id) {
+    id = cs_id;
 }

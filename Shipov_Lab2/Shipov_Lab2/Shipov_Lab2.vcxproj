@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CS.h" />
-    <ClInclude Include="Header.h" />
+    <ClInclude Include="Source.h" />
     <ClInclude Include="pipe.h" />
   </ItemGroup>
   <ItemGroup>
