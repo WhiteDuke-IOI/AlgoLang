@@ -9,15 +9,24 @@ class pipe {
 private:
     int id;
     string name; // Название трубы
-    int lenght = 0; // Длина в км 
-    int diameter = 0; // Диаметр трубы в см
-    bool repair = 0; // 0 Функционирует, 1 Находится в ремонте
+    int lenght; // Длина в км 
+    int diameter; // Диаметр трубы в см
+    bool repair; // 0 Функционирует, 1 Находится в ремонте
 
 public:
+    static int max_pipe_id;
+    pipe() {
+        id = max_pipe_id++;
+        name = "PIPE";
+        lenght = 0;
+        diameter = 0;
+        repair = 0;
+    }
     string get_name() const;
     bool get_repair() const;
+    int get_id() const;
 
-    void set_pipe_id(int id);
+    //void set_pipe_id(int id);
     void set_repair();
     void set_repair(bool new_status);
 

@@ -2,6 +2,8 @@
 
 const int CS_FLAG = 2;
 
+int CS::max_cs_id = 1;
+
 template<typename T>
 T Get_Num(T a, T b) {
     T n;
@@ -14,10 +16,11 @@ T Get_Num(T a, T b) {
     return n;
 }
 
-string CS::get_name() const { return(name); }
-int CS::get_count_ws() const { return(count_ws); }
-int CS::get_act_ws() const { return(act_ws); }
-double CS::get_eff() const { return(eff); }
+string CS::get_name() const { return(this->name); }
+int CS::get_count_ws() const { return(this->count_ws); }
+int CS::get_act_ws() const { return(this->act_ws); }
+double CS::get_eff() const { return(this->eff); }
+int CS::get_id() const { return(this->id); }
 
 ostream& operator<<(ostream& os, const CS& stat) {
     return os << "|" << setw(4) << stat.id << "|" << setw(16) << stat.name << "|" << setw(16) << stat.count_ws << "|" << setw(16) << stat.act_ws
@@ -45,6 +48,8 @@ ofstream& operator<<(ofstream& ofs, const CS& stat) {
 };
 
 ifstream& operator>>(ifstream& ifs, CS& stat) {
+    ifs >> stat.id;
+    getline(ifs, stat.name);
     getline(ifs, stat.name);
     ifs >> stat.act_ws;
     ifs >> stat.count_ws;
@@ -53,11 +58,11 @@ ifstream& operator>>(ifstream& ifs, CS& stat) {
 };
 
 void CS::set_act_ws() { // Редактирование КС      
-    cout << "Old number active workshops: " << act_ws << endl;
+    cout << "Old number active workshops: " << this->act_ws << endl;
     cout << "Enter new number of active worckshop: ";
-    act_ws = Get_Num(0, count_ws);
+    this->act_ws = Get_Num(0, this->count_ws);
 }
 
-void CS::set_cs_id(int cs_id) {
-    id = cs_id;
-}
+//void CS::set_cs_id(int cs_id) {
+//    id = cs_id;
+//}

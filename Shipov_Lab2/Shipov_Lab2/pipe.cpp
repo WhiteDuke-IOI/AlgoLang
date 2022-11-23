@@ -2,6 +2,8 @@
 
 const int PIPE_FLAG = 1;
 
+int pipe::max_pipe_id = 1;
+
 template<typename T>
 T Get_Num(T a, T b) {
     T n;
@@ -13,8 +15,9 @@ T Get_Num(T a, T b) {
     return n;
 }
 
-string pipe::get_name() const { return(name); }
-bool pipe::get_repair() const { return(repair); }
+string pipe::get_name() const { return(this->name); }
+bool pipe::get_repair() const { return(this->repair); }
+int pipe::get_id() const { return(this->id); }
 
 ostream& operator<<(ostream& os, const pipe& p) {
     return os << "|" << setw(4) << p.id << "|" << setw(16) << p.name << "|" << setw(16) << p.lenght << "|" << setw(16) << p.diameter
@@ -42,6 +45,8 @@ ofstream& operator<<(ofstream& ofs, const pipe& p) {
 };
 
 ifstream& operator>>(ifstream& ifs, pipe& p) {
+    ifs >> p.id;
+    getline(ifs, p.name);
     getline(ifs, p.name);
     ifs >> p.lenght;
     ifs >> p.diameter;
@@ -50,16 +55,16 @@ ifstream& operator>>(ifstream& ifs, pipe& p) {
 };
 
 void pipe::set_repair() { // Редактирование трубы
-    cout << "Old repair status: " << repair << endl;;
+    cout << "Old repair status: " << this->repair << endl;;
     cout << "Enter the new repair status: ";
-    repair = Get_Num(0, 1);
+    this->repair = Get_Num(0, 1);
 }
 
 void pipe::set_repair(bool new_status)
 {
-    repair = new_status;
+    this->repair = new_status;
 }
 
-void pipe::set_pipe_id(int pipe_id) {
-    id = pipe_id;
-}
+//void pipe::set_pipe_id(int pipe_id) {
+//    id = pipe_id;
+//}

@@ -17,16 +17,13 @@ int main() {
     unordered_map <int, pipe> mp_pipe;
     unordered_map <int, CS> mp_cs;
 
-    int max_pipe_id = 0;
-    int max_cs_id = 0;
-
     do {
         print_menu();
         int cursor = Get_Num(0, 13);
 
         switch (cursor) {
         case 1: { //Добавление трубы
-            add_pipe_object(mp_pipe, max_pipe_id);
+            add_pipe_object(mp_pipe);
             break;
         }
 
@@ -41,7 +38,7 @@ int main() {
         }
         
         case 4: { //Добавление КС
-            add_CS_object(mp_cs, max_cs_id);
+            add_CS_object(mp_cs);
             break;
         }
 
@@ -71,7 +68,7 @@ int main() {
         }
 
         case 9: { //Загрузка из файла
-            upload(mp_pipe, mp_cs, max_pipe_id, max_cs_id);
+            upload(mp_pipe, mp_cs);
             break;
         }
 

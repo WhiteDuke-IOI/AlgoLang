@@ -44,9 +44,11 @@ bool file_exist(const string& name_file)
 }
 
 //Добавление трубы
-void add_pipe_object(unordered_map <int, pipe>& mp, int& max_pipe_id) {
-    cin >> mp[++max_pipe_id];
-    mp[max_pipe_id].set_pipe_id(max_pipe_id);
+void add_pipe_object(unordered_map <int, pipe>& mp) {
+    pipe p;
+    cin >> p;
+    //mp[p.get_id()] = p;
+    mp.insert({ p.get_id(), p });
 }
 
 //Действие над трубой
@@ -85,9 +87,11 @@ void action_over_pipe(unordered_map <int, pipe>& mp, pipe_func func) {
 }
 
 //Добавление КС
-void add_CS_object(unordered_map <int, CS>& mp, int& max_cs_id) {
-    cin >> mp[++max_cs_id];
-    mp[max_cs_id].set_cs_id(max_cs_id);
+void add_CS_object(unordered_map <int, CS>& mp) {
+    CS stat;
+    cin >> stat;
+    //mp[stat.get_id()] = stat;
+    mp.insert({ stat.get_id(), stat });
 }
 
 //Действие над КС
@@ -159,7 +163,7 @@ void save(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS
 
 
 //Загрузка из файла
-void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs, int& max_pipe_id, int& max_cs_id) {
+void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs) {
     system("cls");
     string name_file;
     while (1) {
@@ -181,23 +185,32 @@ void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs, 
     ifstream fin("..\\" + name_file);
     if (fin.is_open()) {
         int type;
-        int id;
         while (fin >> type) { // Считывание данных из файла до конца
-
-            fin >> id;
             fin.ignore();
+            //cout << type;
             if (type == 1) {
-                fin >> mp_pipe[id];
-                mp_pipe[id].set_pipe_id(id);
-                if (id > max_pipe_id)
-                    max_pipe_id = id;
+                pipe p;
+                fin >> p;
+                mp_pipe.insert({ p.get_id(), p });
+                pipe::max_pipe_id = (pipe::max_pipe_id < p.get_id() ? p.get_id() : pipe::max_pipe_id);
+
+                //fin >> mp_pipe[id];
+                ////mp_pipe[id].set_pipe_id(id);
+                //if (id > max_pipe_id)
+                //    max_pipe_id = id;                
+
             }
             if (type == 2) {
-                fin >> mp_cs[id];
-                mp_cs[id].set_cs_id(id);
-                if (id > max_cs_id)
-                    max_cs_id = id;
+                CS stat;
+                fin >> stat;
+                mp_cs.insert({ stat.get_id(), stat });
+                CS::max_cs_id = (CS::max_cs_id < stat.get_id() ? stat.get_id() : CS::max_cs_id);
+                //fin >> mp_cs[id];
+                ////mp_cs[id].set_cs_id(id);
+                //if (id > max_cs_id)
+                //    max_cs_id = id;
             }
+            //system("pause");
         }
 
         fin.close();
@@ -214,7 +227,7 @@ void pakage_edit_pipe(unordered_map <int, pipe>& mp, unordered_set<int>& found_o
             cout << "Enter ID: ";
             int q = Get_Num(0, (int)mp.size());
             if (q == 0) { break; }
-            if (find(found_obj.begin(), found_obj.end(), q) != found_obj.end()) {
+            if (found_obj.find(q) != found_obj.end()) {
                 obj_vec.insert(q);
             }
             else {
