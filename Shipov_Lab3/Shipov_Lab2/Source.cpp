@@ -1,28 +1,17 @@
 #include "Source.h"
 
-using namespace std;
-
-template<typename T>
-T Get_Num(T a, T b) {
-    T n;
-    while (!(cin >> n) || (n < a) || (n > b) || (cin.get() != '\n')) {
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
-        cout << "Enter correct number: ";
-    }
-    return n;
-}
-
 int main() {
     unordered_map <int, pipe> mp_pipe;
     unordered_map <int, CS> mp_cs;
+    vector <connect> connects;
 
     do {
         print_menu();
-        int cursor = Get_Num(0, 13);
+        int cursor = Get_Num(0, 16);
 
         switch (cursor) {
         case 1: { //Добавление трубы
+            system("cls");
             add_pipe_object(mp_pipe);
             break;
         }
@@ -38,6 +27,7 @@ int main() {
         }
         
         case 4: { //Добавление КС
+            system("cls");
             add_CS_object(mp_cs);
             break;
         }
@@ -63,12 +53,12 @@ int main() {
         }
 
         case 8: { //Сохранение в файл
-            save(mp_pipe, mp_cs);
+            save(mp_pipe, mp_cs, connects);
             break;
         }
 
         case 9: { //Загрузка из файла
-            upload(mp_pipe, mp_cs);
+            upload(mp_pipe, mp_cs, connects);
             break;
         }
 
@@ -89,6 +79,19 @@ int main() {
 
         case 13: { //Поиск КС по проценту незадействованных цехов
             filtration_cs_by_act_ws(mp_cs);
+            break;
+        }
+
+        case 14: {
+            create_new_connection(connects, mp_pipe, mp_cs);
+            break;
+        }
+        case 15: {
+            show_all_connection(connects);
+            break;
+        }
+        case 16: {
+            topology_sort(connects);
             break;
         }
 

@@ -1,20 +1,8 @@
-#include "CS.h"
+#include "utility.h"
 
 const int CS_FLAG = 2;
 
 int CS::max_cs_id = 1;
-
-template<typename T>
-T Get_Num(T a, T b) {
-    T n;
-    while (!(cin >> n) || (n < a) || (n > b) || (cin.get() != '\n')) {
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
-        cout << "Enter correct number: ";
-
-    }
-    return n;
-}
 
 string CS::get_name() const { return(this->name); }
 int CS::get_count_ws() const { return(this->count_ws); }
@@ -28,7 +16,7 @@ ostream& operator<<(ostream& os, const CS& stat) {
 } 
 
 istream& operator>>(istream& is, CS& stat) {
-    system("cls");
+    //system("cls");
     cout << "Add CS\n";
     cout << "Enter the CS's name: ";
     getline(cin, stat.name);
@@ -37,7 +25,7 @@ istream& operator>>(istream& is, CS& stat) {
     cout << "Enter number of active worckshop: ";
     stat.act_ws = Get_Num(0, stat.count_ws);
     cout << "Enter the CS's efficiency: ";
-    stat.eff = Get_Num(0.0, 1.0);
+    stat.eff = (float)Get_Num(0.0, 1.0);
     return is;
 };
 

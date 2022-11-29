@@ -1,7 +1,8 @@
-#include "pipe.h"
-#include "CS.h"
+#include "utility.h"
 #include <unordered_map>
+#include <map>
 #include <unordered_set>
+#include <stack>
 
 
 void print_menu()
@@ -20,19 +21,11 @@ void print_menu()
          << "11. Filtration pipe by repair\n"
          << "12. Filtration CS by name\n"
          << "13. Filtration CS by active workshop\n"
+         << "14. Create new connection\n"
+         << "15. Show all connection\n"
+         << "16. Topology sort\n"
          << "0. Exit\n"
          << "\nChoose action - ";
-}
-
-template<typename T>
-T Get_Num(T a, T b) {
-    T n;
-    while (!(cin >> n) || (n < a) || (n > b) || (cin.get() != '\n')) {
-        cin.clear();
-        cin.ignore(INT_MAX, '\n');
-        cout << "Enter correct number: ";
-    }
-    return n;
 }
 
 bool file_exist(const string& name_file)
@@ -44,7 +37,7 @@ bool file_exist(const string& name_file)
 }
 
 //Добавление трубы
-void add_pipe_object(unordered_map <int, pipe>& mp) {
+void add_pipe_object(unordered_map <int, pipe>& mp) {    
     pipe p;
     cin >> p;
     mp.insert({ p.get_id(), p });
@@ -137,14 +130,14 @@ void show_cs(const unordered_map <int, CS>& mp_cs) {
 }
 
 //Сохранение в файл
-void save(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
+void save(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs, vector <connect>& connects) {
     system("cls");
     string name_file;
     do {
         cout << "Enter the name of file, using for saving data: ";
         getline(cin, name_file);
         if (file_exist(name_file))
-            cout << "This file is already exist. Rewrite file ? Yes 1 / No 0";
+            cout << "This file is already exist. Rewrite file ? Yes 1 / No 0: ";
         else
             break;
     } while (!Get_Num(0, 1));
@@ -154,14 +147,14 @@ void save(const unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS
     if (fout.is_open()) {
         if (mp_pipe.size()) for (auto iter : mp_pipe) {fout << iter.second; }
         if (mp_cs.size()) for (auto iter : mp_cs) {fout << iter.second; }
+        if (connects.size()) for (auto iter : connects) { fout << 3 << endl << iter.initial_cs_id << endl << iter.terminal_cs_id << endl << iter.pipe_id.get_id() << endl << endl; }
         fout.close();
     }
-    cout << "\nData "; (mp_pipe.size()) || (mp_cs.size()) ? cout << "have" : cout << "haven't"; cout << " been saved";
-    system("pause");
 }
 
+
 //Загрузка из файла
-void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs) {
+void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs, vector <connect>& connects) {
     system("cls");
     string name_file;
     while (1) {
@@ -195,12 +188,20 @@ void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs) 
                 mp_cs.insert({ stat.get_id(), stat });
                 CS::max_cs_id = (CS::max_cs_id < stat.get_id() ? stat.get_id() : CS::max_cs_id);
             }
+            if (type == 3) {
+                connect con;
+                fin >> con.initial_cs_id;
+                fin >> con.terminal_cs_id;
+                int id;
+                fin >> id;
+                con.pipe_id = mp_pipe[id];
+                connects.push_back(con);
+            }
         }
-
         fin.close();
-        //cout << "\nData "; (mp_pipe.size()) || (mp_cs.size()) ? cout << "have" : cout << "haven't"; cout << " been upload";
     }
 }
+
 
 void pakage_edit_pipe(unordered_map <int, pipe>& mp, unordered_set<int>& found_obj) {
     cout << "Choice what you want to edit, enter 0 for All or 1 for select object's ID: ";
@@ -340,4 +341,130 @@ void filtration_cs_by_name(const unordered_map <int, CS>& mp) {
         else { cout << "Sorry, we didn't found any CS" << endl; }
     }
     else { cout << "Sorry, we haven't any CS" << endl; system("pause"); }
+}
+
+int checker_cs_id(const unordered_map <int, CS>& mp_cs) {
+    while (1) {
+        int id = Get_Num(1, INT_MAX);
+        if (mp_cs.count(id))
+            return(id);
+        else
+            cout << "\nThis ID not exist. Try again: ";
+    }
+}
+
+int checker_pipeline_id(unordered_map <int, pipe>& mp_pipe) {
+    while (1) {
+        cout << "Enter pipeline's diameter 500, 700, 1400: ";
+        int diameter = Get_Num(1, INT_MAX);
+        if (!((diameter == 500) || (diameter == 700) || (diameter == 1400))) {
+            cout << endl << "Incorrect diameter. Try again." << endl;
+            continue;
+        }
+
+        for (auto iter_search : mp_pipe)
+            if (diameter == iter_search.second.get_diameter())
+                return(iter_search.first);
+
+        while (1) {
+            cout << "\nThis pipeline diameter's not exist. Create new pipeline.";
+            add_pipe_object(mp_pipe);                
+            if (mp_pipe[pipe::max_pipe_id-1].get_diameter() != diameter)
+                cout << "This pipeline hasn't " << diameter << " diameter. Create again.";
+            else break;
+        }
+    }
+    return(pipe::max_pipe_id);
+}
+
+void create_new_connection(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
+    system("cls");
+    connect new_connect;
+
+    cout << "Enter initial compressor station's ID: ";
+    new_connect.initial_cs_id = checker_cs_id(mp_cs);
+
+    cout << "Enter terminal compressor station'S ID: ";
+    new_connect.terminal_cs_id = checker_cs_id(mp_cs);
+
+    new_connect.pipe_id = mp_pipe[checker_pipeline_id(mp_pipe)];
+
+    connects.push_back(new_connect);
+}
+
+void show_all_connection(vector <connect>& connects) {
+    system("cls");
+    unordered_map <int, unordered_map <int, pipe>> adjacency_matrix;
+    for (auto iter_connect : connects)
+        adjacency_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = iter_connect.pipe_id;
+
+    cout << "[CS ID] -> (CS ID) : PIPE ID \n" << endl;
+    for (auto iter_some_network : adjacency_matrix) {
+        cout << "[" << iter_some_network.first << "]" << " -> ";
+        for (auto iter_term : adjacency_matrix[iter_some_network.first])
+            cout << "(" << iter_term.first << ")" << " : " << iter_term.second.get_id() << ",  ";
+        cout << endl;
+    }
+    system("pause");
+}
+
+void dfs(unordered_map <int, unordered_map <int, pipe>> adjacency_matrix, vector<int>& top_sort_cs, int first_cs) {
+    map <int, bool> visited_point;
+    stack <int> stack_dfs;
+    int ID_cs = first_cs;
+
+    top_sort_cs.push_back(ID_cs);
+    stack_dfs.push(ID_cs);
+
+    while (!stack_dfs.empty())
+    {
+        ID_cs = stack_dfs.top();
+        stack_dfs.pop();
+
+        for (auto iter_adj_matrix : adjacency_matrix[ID_cs])
+        {
+            ID_cs = iter_adj_matrix.first;
+            if (ID_cs == iter_adj_matrix.first)
+            {
+                cout << " Graph has infinity cycle" << endl;
+                return;
+            }
+            stack_dfs.push(ID_cs);
+            if (!visited_point[ID_cs])
+                top_sort_cs.push_back(ID_cs);
+            visited_point[ID_cs] = true;
+        }
+    }
+}
+
+void topology_sort(vector <connect>& connects) {
+    system("cls");
+    unordered_map <int, unordered_map <int, pipe>> adjacency_matrix;
+    unordered_map <int, unordered_map <int, pipe>> inv_adjacency_matrix;
+    for (auto iter_connect : connects) {
+        adjacency_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = iter_connect.pipe_id;
+        inv_adjacency_matrix[iter_connect.terminal_cs_id][iter_connect.initial_cs_id] = iter_connect.pipe_id;
+    }
+
+    vector<int> top_sort_cs;
+    int first_cs = 1;
+
+    while (1) {
+        cout << "For topology sort choice one cs from these: ";
+        for (auto iter : adjacency_matrix)
+            if (inv_adjacency_matrix.find(iter.first) == inv_adjacency_matrix.end())
+                cout << "[" << iter.first << "], ";
+        cout << endl << "Enter ID cs: ";
+        first_cs = Get_Num(1, INT_MAX);
+        if (!(inv_adjacency_matrix.find(first_cs) == inv_adjacency_matrix.end()))
+            cout << "Incorrect ID. Try again." << endl;
+        else
+            break;
+    }
+    dfs(adjacency_matrix, top_sort_cs, first_cs);
+    reverse(top_sort_cs.begin(), top_sort_cs.end());
+    int num = 1;
+    for (auto iter : top_sort_cs)
+        cout << num++ << " : ID [" << iter << "] " << endl;
+    system("pause");
 }

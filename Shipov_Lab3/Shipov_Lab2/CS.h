@@ -24,11 +24,11 @@ public:
 		eff = 0;
 	}
 
-	int get_id() const;
 	string get_name() const;
 	int get_count_ws() const;
 	int get_act_ws() const;
 	double get_eff() const;
+	int get_id() const;
 
 	void set_act_ws();
 
