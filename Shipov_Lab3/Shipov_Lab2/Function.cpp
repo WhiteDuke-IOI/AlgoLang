@@ -363,7 +363,7 @@ int checker_pipeline_id(unordered_map <int, pipe>& mp_pipe) {
         }
 
         for (auto iter_search : mp_pipe)
-            if (diameter == iter_search.second.get_diameter())
+            if ((diameter == iter_search.second.get_diameter()) && (!iter_search.second.used))
                 return(iter_search.first);
 
         while (1) {
@@ -387,7 +387,9 @@ void create_new_connection(vector <connect>& connects, unordered_map <int, pipe>
     cout << "Enter terminal compressor station'S ID: ";
     new_connect.terminal_cs_id = checker_cs_id(mp_cs);
 
-    new_connect.pipe_id = mp_pipe[checker_pipeline_id(mp_pipe)];
+    int id = checker_pipeline_id(mp_pipe);
+    new_connect.pipe_id = mp_pipe[id];
+    mp_pipe[id].used = true;
 
     connects.push_back(new_connect);
 }

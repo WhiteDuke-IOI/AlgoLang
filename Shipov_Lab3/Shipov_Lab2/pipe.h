@@ -14,6 +14,7 @@ private:
     bool repair; // 0 Функционирует, 1 Находится в ремонте
 
 public:
+    bool used = false;
     static int max_pipe_id;
     pipe() {
         id = max_pipe_id++;
