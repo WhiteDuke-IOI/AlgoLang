@@ -31,7 +31,7 @@ istream& operator>>(istream& is, pipe& p) {
 };
 
 ofstream& operator<<(ofstream& ofs, const pipe& p) {
-    ofs << PIPE_FLAG << endl << p.id << endl << p.name << endl << p.lenght << endl << p.diameter << endl << p.repair
+    ofs << PIPE_FLAG << endl << p.id << endl << p.name << endl << p.lenght << endl << p.diameter << endl << p.repair << endl << p.used
         << endl << endl;
     return ofs;
 };
@@ -43,6 +43,7 @@ ifstream& operator>>(ifstream& ifs, pipe& p) {
     ifs >> p.lenght;
     ifs >> p.diameter;
     ifs >> p.repair;
+    ifs >> p.used;
     return ifs;
 };
 

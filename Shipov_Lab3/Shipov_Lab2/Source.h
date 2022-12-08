@@ -54,5 +54,5 @@ void filtration_cs_by_name(const unordered_map <int, CS>& mp);
 void filtration_cs_by_act_ws(const unordered_map <int, CS>& mp);
 
 void create_new_connection(vector <connect>& connect_cs, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
-void show_all_connection(vector <connect>& connect_cs);
-void topology_sort(vector <connect>& connects);
+void show_all_connection(vector <connect>& connect_cs, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
+void topology_sort(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);

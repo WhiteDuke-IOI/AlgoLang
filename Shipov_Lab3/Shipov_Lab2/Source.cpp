@@ -87,11 +87,11 @@ int main() {
             break;
         }
         case 15: {
-            show_all_connection(connects);
+            show_all_connection(connects, mp_pipe, mp_cs);
             break;
         }
         case 16: {
-            topology_sort(connects);
+            topology_sort(connects, mp_pipe, mp_cs);
             break;
         }
 

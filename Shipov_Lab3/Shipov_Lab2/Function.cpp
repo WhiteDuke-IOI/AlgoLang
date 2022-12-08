@@ -8,7 +8,7 @@
 void print_menu()
 {
     system("cls");
-    cout << "1. Add pipeline\n"
+    cout << "1. Add pipeline\n" << "max pipe id: " << pipe::max_pipe_id 
          << "2. Edit pipeline\n"
          << "3. Delete pipeline\n"
          << "4. Add compressor stations\n"
@@ -190,11 +190,12 @@ void upload(unordered_map <int, pipe>& mp_pipe, unordered_map <int, CS>& mp_cs, 
             }
             if (type == 3) {
                 connect con;
+                pipe::max_pipe_id--;
                 fin >> con.initial_cs_id;
                 fin >> con.terminal_cs_id;
                 int id;
                 fin >> id;
-                con.pipe_id = mp_pipe[id];
+                con.pipe_id = mp_pipe.at(id);
                 connects.push_back(con);
             }
         }
@@ -368,24 +369,41 @@ int checker_pipeline_id(unordered_map <int, pipe>& mp_pipe) {
 
         while (1) {
             cout << "\nThis pipeline diameter's not exist. Create new pipeline.";
-            add_pipe_object(mp_pipe);                
-            if (mp_pipe[pipe::max_pipe_id-1].get_diameter() != diameter)
+            //add_pipe_object(mp_pipe);  
+            pipe p;
+            cin >> p;
+            mp_pipe.insert({ p.get_id(), p });
+            if (mp_pipe.at(p.get_id()).get_diameter() != diameter)
                 cout << "This pipeline hasn't " << diameter << " diameter. Create again.";
-            else break;
+            else return(p.get_id());
         }
     }
-    return(pipe::max_pipe_id);
+    
 }
 
 void create_new_connection(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
     connect new_connect;
+    pipe::max_pipe_id--;
 
-    cout << "Enter initial compressor station's ID: ";
-    new_connect.initial_cs_id = checker_cs_id(mp_cs);
+    bool flag = false;
+    do {
+        cout << "Enter initial compressor station's ID: ";
+        new_connect.initial_cs_id = checker_cs_id(mp_cs);
 
-    cout << "Enter terminal compressor station'S ID: ";
-    new_connect.terminal_cs_id = checker_cs_id(mp_cs);
+        cout << "Enter terminal compressor station'S ID: ";
+        new_connect.terminal_cs_id = checker_cs_id(mp_cs);
+
+        for (auto iter : connects) {
+            if ((iter.initial_cs_id == new_connect.initial_cs_id) && (iter.terminal_cs_id == new_connect.terminal_cs_id)) {
+                flag = true;
+                cout << "This CS's was connected. Try again.\n";
+            }
+            else {
+                flag = false;
+            }                
+        }      
+    } while(flag);    
 
     int id = checker_pipeline_id(mp_pipe);
     new_connect.pipe_id = mp_pipe[id];
@@ -394,11 +412,18 @@ void create_new_connection(vector <connect>& connects, unordered_map <int, pipe>
     connects.push_back(new_connect);
 }
 
-void show_all_connection(vector <connect>& connects) {
+void show_all_connection(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
     unordered_map <int, unordered_map <int, pipe>> adjacency_matrix;
     for (auto iter_connect : connects)
+    {
+        if (!(
+            mp_cs.count(iter_connect.initial_cs_id) && mp_cs.count(iter_connect.terminal_cs_id)
+            && mp_pipe.count((iter_connect.pipe_id).get_id())
+            )) continue;
         adjacency_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = iter_connect.pipe_id;
+    }
+        
 
     cout << "[CS ID] -> (CS ID) : PIPE ID \n" << endl;
     for (auto iter_some_network : adjacency_matrix) {
@@ -425,12 +450,6 @@ void dfs(unordered_map <int, unordered_map <int, pipe>> adjacency_matrix, vector
 
         for (auto iter_adj_matrix : adjacency_matrix[ID_cs])
         {
-            ID_cs = iter_adj_matrix.first;
-            if (ID_cs == iter_adj_matrix.first)
-            {
-                cout << " Graph has infinity cycle" << endl;
-                return;
-            }
             stack_dfs.push(ID_cs);
             if (!visited_point[ID_cs])
                 top_sort_cs.push_back(ID_cs);
@@ -439,34 +458,77 @@ void dfs(unordered_map <int, unordered_map <int, pipe>> adjacency_matrix, vector
     }
 }
 
-void topology_sort(vector <connect>& connects) {
+void topology_sort(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
     unordered_map <int, unordered_map <int, pipe>> adjacency_matrix;
     unordered_map <int, unordered_map <int, pipe>> inv_adjacency_matrix;
     for (auto iter_connect : connects) {
+        if (!(
+            mp_cs.count(iter_connect.initial_cs_id) && mp_cs.count(iter_connect.terminal_cs_id)
+            && mp_pipe.count((iter_connect.pipe_id).get_id())
+            )) continue;
         adjacency_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = iter_connect.pipe_id;
         inv_adjacency_matrix[iter_connect.terminal_cs_id][iter_connect.initial_cs_id] = iter_connect.pipe_id;
     }
 
-    vector<int> top_sort_cs;
-    int first_cs = 1;
+    stack <int> stack_dfs;
+    for (auto iter_adj_matrix : adjacency_matrix)
+    {
+        map <int, bool> visited_point;
+        int ID_cs = 0;
+        stack_dfs.push(iter_adj_matrix.first);
 
-    while (1) {
-        cout << "For topology sort choice one cs from these: ";
-        for (auto iter : adjacency_matrix)
-            if (inv_adjacency_matrix.find(iter.first) == inv_adjacency_matrix.end())
-                cout << "[" << iter.first << "], ";
-        cout << endl << "Enter ID cs: ";
-        first_cs = Get_Num(1, INT_MAX);
-        if (!(inv_adjacency_matrix.find(first_cs) == inv_adjacency_matrix.end()))
-            cout << "Incorrect ID. Try again." << endl;
-        else
-            break;
+        while (!stack_dfs.empty())
+        {
+            ID_cs = stack_dfs.top();
+            stack_dfs.pop();
+
+            if (adjacency_matrix.find(ID_cs) != adjacency_matrix.end())
+                for (auto& iter_adj_matrix_ID_cs : adjacency_matrix.at(ID_cs))
+                {
+                    if (visited_point[iter_adj_matrix_ID_cs.first])
+                    {
+                        cout << " This graph isn't tree. Topology sort is impossible " << endl;
+                        system("pause");
+                        return;
+                    }
+                    stack_dfs.push(iter_adj_matrix_ID_cs.first);
+                    visited_point[ID_cs] = true;
+                }
+        }
     }
-    dfs(adjacency_matrix, top_sort_cs, first_cs);
-    reverse(top_sort_cs.begin(), top_sort_cs.end());
-    int num = 1;
+
+    map <int, bool> visited_point;
+    vector<int> top_sort_cs;
+
+    for (auto iter_adj_matrix : adjacency_matrix)
+        if (inv_adjacency_matrix.find(iter_adj_matrix.first) == inv_adjacency_matrix.end())
+        {
+            int ID_cs = iter_adj_matrix.first;
+            stack <int> stack_dfs;
+
+            stack_dfs.push(ID_cs);
+            top_sort_cs.push_back(ID_cs);
+            while (!stack_dfs.empty())
+            {
+                ID_cs = stack_dfs.top();
+                stack_dfs.pop();
+                for (auto iter_adj_matrix : adjacency_matrix[ID_cs])
+                {
+                    ID_cs = iter_adj_matrix.first;
+                    stack_dfs.push(ID_cs);
+                    if (!visited_point[ID_cs])
+                        top_sort_cs.push_back(ID_cs);
+                    visited_point[ID_cs] = true;
+                }
+            }
+        }
+
+    int num_CS_at_topology = 1;
     for (auto iter : top_sort_cs)
-        cout << num++ << " : ID [" << iter << "] " << endl;
+    {
+        cout << " " << num_CS_at_topology++ << " -> ID [" << iter << "] " << endl;
+    }
     system("pause");
 }
+
