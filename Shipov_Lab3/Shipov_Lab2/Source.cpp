@@ -7,7 +7,7 @@ int main() {
 
     do {
         print_menu();
-        int cursor = Get_Num(0, 16);
+        int cursor = Get_Num(0, 18);
 
         switch (cursor) {
         case 1: { //Добавление трубы
@@ -92,6 +92,14 @@ int main() {
         }
         case 16: {
             topology_sort(connects, mp_pipe, mp_cs);
+            break;
+        }
+        case 17: {
+            dijkstra_algorithm(connects, mp_pipe, mp_cs);
+            break;
+        }
+        case 18: {
+            ford_falkerson(connects, mp_pipe, mp_cs);
             break;
         }
 

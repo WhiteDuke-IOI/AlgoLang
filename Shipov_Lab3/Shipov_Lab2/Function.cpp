@@ -3,12 +3,13 @@
 #include <map>
 #include <unordered_set>
 #include <stack>
+#include <queue>
 
 
 void print_menu()
 {
     system("cls");
-    cout << "1. Add pipeline\n" << "max pipe id: " << pipe::max_pipe_id 
+    cout << "1. Add pipeline\n"
          << "2. Edit pipeline\n"
          << "3. Delete pipeline\n"
          << "4. Add compressor stations\n"
@@ -24,6 +25,8 @@ void print_menu()
          << "14. Create new connection\n"
          << "15. Show all connection\n"
          << "16. Topology sort\n"
+         << "17. Find all shortest path\n"
+         << "18. Find max flow\n"
          << "0. Exit\n"
          << "\nChoose action - ";
 }
@@ -435,28 +438,28 @@ void show_all_connection(vector <connect>& connects, unordered_map <int, pipe>& 
     system("pause");
 }
 
-void dfs(unordered_map <int, unordered_map <int, pipe>> adjacency_matrix, vector<int>& top_sort_cs, int first_cs) {
-    map <int, bool> visited_point;
-    stack <int> stack_dfs;
-    int ID_cs = first_cs;
-
-    top_sort_cs.push_back(ID_cs);
-    stack_dfs.push(ID_cs);
-
-    while (!stack_dfs.empty())
-    {
-        ID_cs = stack_dfs.top();
-        stack_dfs.pop();
-
-        for (auto iter_adj_matrix : adjacency_matrix[ID_cs])
-        {
-            stack_dfs.push(ID_cs);
-            if (!visited_point[ID_cs])
-                top_sort_cs.push_back(ID_cs);
-            visited_point[ID_cs] = true;
-        }
-    }
-}
+//void dfs(unordered_map <int, unordered_map <int, pipe>> adjacency_matrix, vector<int>& top_sort_cs, int first_cs) {
+//    map <int, bool> visited_point;
+//    stack <int> stack_dfs;
+//    int ID_cs = first_cs;
+//
+//    top_sort_cs.push_back(ID_cs);
+//    stack_dfs.push(ID_cs);
+//
+//    while (!stack_dfs.empty())
+//    {
+//        ID_cs = stack_dfs.top();
+//        stack_dfs.pop();
+//
+//        for (auto iter_adj_matrix : adjacency_matrix[ID_cs])
+//        {
+//            stack_dfs.push(ID_cs);
+//            if (!visited_point[ID_cs])
+//                top_sort_cs.push_back(ID_cs);
+//            visited_point[ID_cs] = true;
+//        }
+//    }
+//}
 
 void topology_sort(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs) {
     system("cls");
@@ -532,3 +535,191 @@ void topology_sort(vector <connect>& connects, unordered_map <int, pipe>& mp_pip
     system("pause");
 }
 
+void out_shortest_path(int initial_point, map<int, int>& copy_tmp_cs, unordered_map <int, unordered_map <int, pipe>> inv_adjacency_matrix)
+{
+    string delimeter_screen = "*******************************************************************************";
+    cout << delimeter_screen << endl;
+    cout << " Initial point:[" << initial_point << "]\n" << endl;
+
+    for (auto iter_copy_tmp_cs : copy_tmp_cs)
+    {
+        queue<int> cs_queue;
+        cs_queue.push(iter_copy_tmp_cs.first);
+
+        list<int> short_path = { iter_copy_tmp_cs.first };
+
+        bool flag = true;
+        while (!cs_queue.empty() && flag)
+        {
+            for (auto iter_inv_adj_matrix : inv_adjacency_matrix[cs_queue.front()])
+                if (copy_tmp_cs[cs_queue.front()] - iter_inv_adj_matrix.second.get_lenght() == copy_tmp_cs[iter_inv_adj_matrix.first])
+                {
+                    cs_queue.push(iter_inv_adj_matrix.first);
+                    short_path.push_back(iter_inv_adj_matrix.first);
+                }
+            cs_queue.pop();
+        }
+
+        reverse(short_path.begin(), short_path.end());
+
+        for (auto iter_short_path : short_path)
+            cout << " " << iter_short_path << " -> ";
+        cout << " L: " << copy_tmp_cs[*(--short_path.end())] << endl;
+    }
+    cout << endl;
+}
+
+void dijkstra_algorithm(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs)
+{
+    system("cls");
+    unordered_map <int, unordered_map <int, pipe>> adjacency_matrix;
+    unordered_map <int, unordered_map <int, pipe>> inv_adjacency_matrix;
+    for (auto iter_connect : connects) {
+        if (!(
+            mp_cs.count(iter_connect.initial_cs_id) && mp_cs.count(iter_connect.terminal_cs_id)
+            && mp_pipe.count((iter_connect.pipe_id).get_id())
+            )) continue;
+        adjacency_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = iter_connect.pipe_id;
+        inv_adjacency_matrix[iter_connect.terminal_cs_id][iter_connect.initial_cs_id] = iter_connect.pipe_id;
+    }
+
+
+    map<int, int> temp_cs;
+
+    for (auto iter1_adj_matrix : adjacency_matrix)
+    {
+        temp_cs[iter1_adj_matrix.first] = INT_MAX;
+        for (auto iter2_adj_matrix : iter1_adj_matrix.second)
+            temp_cs[iter2_adj_matrix.first] = INT_MAX;
+    }
+
+    cout << "ALL SHORTEST PATH" << endl;
+
+    for (auto iter1_adj_matrix : adjacency_matrix)
+    {
+        queue<int> vert_queue;
+        vert_queue.push(iter1_adj_matrix.first);
+
+        map<int, int> copy_tmp_cs = temp_cs;
+        copy_tmp_cs[iter1_adj_matrix.first] = 0;
+
+        while (!vert_queue.empty())
+        {
+            for (auto iter2_adj_matrix : adjacency_matrix[vert_queue.front()])
+            {
+                copy_tmp_cs[iter2_adj_matrix.first] = min(copy_tmp_cs[vert_queue.front()] + (!iter2_adj_matrix.second.get_repair() ? iter2_adj_matrix.second.get_lenght() : INT_MAX), copy_tmp_cs[iter2_adj_matrix.first]);
+                vert_queue.push(iter2_adj_matrix.first);
+            }
+            vert_queue.pop();
+        }
+        for (auto iter = copy_tmp_cs.begin(); iter != copy_tmp_cs.end(); )
+            if ((iter->second == 0) || (iter->second == INT_MAX))
+                iter = copy_tmp_cs.erase(iter);
+            else
+                ++iter;
+        if (copy_tmp_cs.size())
+            out_shortest_path(iter1_adj_matrix.first, copy_tmp_cs, inv_adjacency_matrix);
+    }
+    system("pause");
+}
+
+bool breadth_first_search(unordered_map <int, unordered_map <int, int>>& flow_matrix, map<int, int>& parent, int Source, int Stock)
+{
+    queue<int> vert_queue;
+    vert_queue.push(Source);
+
+    map <int, bool> visited_vert;
+    for (auto iter1_flow_matrix : flow_matrix)
+    {
+        visited_vert[iter1_flow_matrix.first] = false;
+        for (auto iter2_flow_matrix : iter1_flow_matrix.second)
+            visited_vert[iter2_flow_matrix.first] = false;
+    }
+
+    while (!vert_queue.empty())
+    {
+        for (auto iter : flow_matrix[vert_queue.front()])
+            if (!(visited_vert[iter.first]) && (flow_matrix[vert_queue.front()][iter.first] > 0))
+            {
+                parent[iter.first] = vert_queue.front();
+                visited_vert[iter.first] = true;
+                if (iter.first == Stock)
+                    return true;
+                vert_queue.push(iter.first);
+            }
+
+        vert_queue.pop();
+    }
+    return false;
+}
+
+void ford_falkerson(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs)
+{
+    system("cls");
+    unordered_map <int, unordered_map <int, pipe>> adjacency_matrix;
+    unordered_map <int, unordered_map <int, pipe>> inv_adjacency_matrix;
+    unordered_map <int, unordered_map <int, int>> flow_matrix;
+    for (auto iter_connect : connects) {
+        if (!(
+            mp_cs.count(iter_connect.initial_cs_id) && mp_cs.count(iter_connect.terminal_cs_id)
+            && mp_pipe.count((iter_connect.pipe_id).get_id())
+            )) continue;
+        adjacency_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = iter_connect.pipe_id;
+        inv_adjacency_matrix[iter_connect.terminal_cs_id][iter_connect.initial_cs_id] = iter_connect.pipe_id;
+        flow_matrix[iter_connect.initial_cs_id][iter_connect.terminal_cs_id] = ((!mp_pipe.at(iter_connect.pipe_id.get_id()).get_repair()) ? (mp_pipe.at(iter_connect.pipe_id.get_id()).get_diameter() * mp_pipe.at(iter_connect.pipe_id.get_id()).get_lenght() / 100) : (0));
+    }
+
+    int total_total_max_flow = 0;
+    for (auto iter_adj_matrix : adjacency_matrix)
+        if (inv_adjacency_matrix.find(iter_adj_matrix.first) == inv_adjacency_matrix.end())
+        {
+            int tot_flow = 0;
+            int Source = iter_adj_matrix.first;
+            cout << "                                   Source [" << Source << "]" << endl;
+
+            for (auto iter_inv_adj_matrix : inv_adjacency_matrix)
+                if (adjacency_matrix.find(iter_inv_adj_matrix.first) == adjacency_matrix.end())
+                {
+                    int Stock = iter_inv_adj_matrix.first;
+                    cout << "Stock [" << Stock << "]" << endl;
+
+                    map<int, int> parent;
+                    int max_flow = 0;
+                    while (breadth_first_search(flow_matrix, parent, Source, Stock))
+                    {
+                        unordered_set<int> way_cs;
+                        int path_flow = INT_MAX;
+                        for (int one = Stock; one != Source; one = parent[one])
+                        {
+                            int two = parent[one];
+                            way_cs.insert(one);
+                            way_cs.insert(two);
+                            path_flow = min(path_flow, flow_matrix[two][one]);
+                        }
+
+                        list <int> way_cs_reverse;
+                        for (auto iter_way_cs : way_cs)
+                            way_cs_reverse.push_front(iter_way_cs);
+                        cout << "WAY: ";
+                        for (auto iter_way_cs_reverse : way_cs_reverse)
+                            cout << " ->" << iter_way_cs_reverse;
+
+                        for (int one = Stock; one != Source; one = parent[one])
+                        {
+                            int two = parent[one];
+                            flow_matrix[two][one] -= path_flow;
+                        }
+                        max_flow += path_flow;
+                        cout << endl;
+
+                    }
+                    //if (max_flow) cout << " Found max flow: " << max_flow << endl;
+                    tot_flow += max_flow;
+                    cout << " Found max flow: " << max_flow << endl << endl;
+                }
+            total_total_max_flow += tot_flow;
+            cout << "\n________________________" << " Total max flow: " << tot_flow << endl;
+        }
+    cout << " Summary all gas transmission network max flow:  " << total_total_max_flow << endl;
+    system("pause");
+}

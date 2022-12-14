@@ -1,6 +1,7 @@
 #include "utility.h"
 #include <fstream>
 #include <string>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -55,4 +56,11 @@ void filtration_cs_by_act_ws(const unordered_map <int, CS>& mp);
 
 void create_new_connection(vector <connect>& connect_cs, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
 void show_all_connection(vector <connect>& connect_cs, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
+
 void topology_sort(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
+
+void dijkstra_algorithm(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
+void out_shortest_path(int initial_point, map<int, int>& copy_tmp_cs, unordered_map <int, unordered_map <int, pipe>> inv_adjacency_matrix);
+
+bool breadth_first_search(unordered_map <int, unordered_map <int, int>>& flow_matrix, map<int, int>& parent, int Source, int Stock);
+void ford_falkerson(vector <connect>& connects, unordered_map <int, pipe>& mp_pipe, const unordered_map <int, CS>& mp_cs);
