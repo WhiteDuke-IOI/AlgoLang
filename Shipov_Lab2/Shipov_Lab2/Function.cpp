@@ -319,8 +319,8 @@ void filtration_cs_by_act_ws(const unordered_map <int, CS>& mp) {
         cout << endl << left << "Find CSs\n";
         cout << "|" << setw(4) << "ID" << "|" << setw(16) << "Name" << "|" << setw(16) << "Count WS" << "|" << setw(16) << "Act WS" << "|" << setw(10) << "Efficiency" << "|" << endl
              << "====================================================================" << endl;
-        if (found_vector.size()) { for (int i : found_vector) { cout << mp.at(i); } }
-        else { cout << "Sorry, we didn't found any CS" << endl; }
+        if (found_vector.size()) { for (int i : found_vector) { cout << mp.at(i); } system("pause");}
+        else { cout << "Sorry, we didn't found any CS" << endl; system("pause");}
     }
     else { cout << "Sorry, we haven't any CS" << endl; system("pause"); }
 }
@@ -336,8 +336,8 @@ void filtration_cs_by_name(const unordered_map <int, CS>& mp) {
         cout << endl << left << "Find CSs\n";
         cout << "|" << setw(4) << "ID" << "|" << setw(16) << "Name" << "|" << setw(16) << "Count WS" << "|" << setw(16) << "Act WS" << "|" << setw(10) << "Efficiency" << "|" << endl
              << "====================================================================" << endl;
-        if (found_vector.size() != 0) { for (int i : found_vector) { cout << mp.at(i); } }
-        else { cout << "Sorry, we didn't found any CS" << endl; }
+        if (found_vector.size() != 0) { for (int i : found_vector) { cout << mp.at(i); } system("pause");}
+        else { cout << "Sorry, we didn't found any CS" << endl; system("pause");}
     }
     else { cout << "Sorry, we haven't any CS" << endl; system("pause"); }
 }
